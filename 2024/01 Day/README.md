@@ -1,26 +1,18 @@
-# 🎄 Advent of Code: Day 1 - Historian Hysteria 🎄
+# Advent of Code - Day 1: Historian Hysteria
 
-The Chief Historian is always present for the big Christmas sleigh launch, but nobody has seen him in months! Last anyone heard, he was visiting locations that are historically significant to the North Pole; a group of Senior Historians has asked you to accompany them as they check the places they think he was most likely to visit.
+## Introduction
 
-As each location is checked, they will mark it on their list with a star. They figure the Chief Historian must be in one of the first fifty places they'll look, so in order to save Christmas, you need to help them get fifty stars on their list before Santa takes off on December 25th.
+The Chief Historian has gone missing, and the Elvish Senior Historians need your help! By reconciling two lists of historically significant location IDs, we can uncover the truth about the Chief Historian's journey.
 
-Collect stars by solving puzzles. Two puzzles will be made available on each day in the Advent calendar; the second puzzle is unlocked when you complete the first. Each puzzle grants one star. **Good luck!**
+Advent of Code presents two puzzles each day, granting stars upon successful completion. Solve both parts of the challenge for Day 1 and help save Christmas!
 
 ---
 
-## Part 1: Reconciling Lists
+### Part One
 
-You haven't even left yet and the group of Elvish Senior Historians has already hit a problem: their list of locations to check is currently empty. Eventually, someone decides that the best place to check first would be the Chief Historian's office.
+The lists of location IDs from two groups of Elves must be reconciled by pairing the smallest number from one list with the smallest number from the other. For each pair, calculate the distance between the numbers and sum these distances to find the **total distance**.
 
-Upon pouring into the office, everyone confirms that the Chief Historian is indeed nowhere to be found. Instead, the Elves discover an assortment of notes and lists of historically significant locations! This seems to be the planning the Chief Historian was doing before he left. Perhaps these notes can be used to determine which locations to search?
-
-### The Problem
-
-Throughout the Chief's office, the historically significant locations are listed not by name but by a unique number called the **location ID**. To make sure they don't miss anything, The Historians split into two groups, each searching the office and trying to create their own complete list of location IDs.
-
-There's just one problem: by holding the two lists up side by side (your puzzle input), it quickly becomes clear that the lists aren't very similar. Maybe you can help The Historians reconcile their lists?
-
-### Example
+**Example Input:**
 
 <table>
   <thead>
@@ -82,10 +74,108 @@ To find the total distance between the left list and the right list, add up the 
 2 + 1 + 0 + 1 + 2 + 5 = 11
 
 
+### Part Two
+
+Analyze the lists further to compute a **similarity score**. Multiply each number in the left list by the number of times it appears in the right list and sum these values.
+
+**Example Input:**
+
+
+**Example Calculation:**
+- Count occurrences of each number in the right list:
+    - 3 appears 3 times
+    - 4 appears 1 time
+    - 5 appears 1 time
+    - 9 appears 1 time
+
+- Multiply each number in the left list by its frequency in the right list:
+    - 3 × 3 = 9
+    - 4 × 1 = 4
+    - 2 × 0 = 0
+    - 1 × 0 = 0
+    - 3 × 3 = 9
+    - 3 × 3 = 9
+
+**Similarity Score:** `9 + 4 + 0 + 0 + 9 + 9 = 31`
+
 ---
 
-### Your Input
+## Results
 
-Your actual left and right lists contain many location IDs. **What is the total distance between your lists?**
+For your input:
 
-See input.txt.
+- **Part One - Total Distance:** `2031679`
+- **Part Two - Similarity Score:** `19678534`
+
+---
+
+## Solution in Kotlin
+
+Below is the Kotlin implementation for solving both parts of the Day 1 challenge.
+
+```kotlin
+import java.io.File
+
+fun main() {
+    println("Script started.") // Confirm the script is running
+
+    // Read input file
+    val inputFile = File("input.txt")
+    if (!inputFile.exists()) {
+        println("Error: input.txt file not found!")
+        return
+    }
+
+    println("Reading input file...")
+
+    // Parse the input
+    val leftList = mutableListOf<Int>()
+    val rightList = mutableListOf<Int>()
+
+    inputFile.forEachLine { line ->
+        println("Processing line: $line") // Print each line being processed
+        val (left, right) = line.split("\\s+".toRegex()).map { it.toInt() }
+        leftList.add(left)
+        rightList.add(right)
+    }
+
+    println("Left List (unsorted): $leftList")
+    println("Right List (unsorted): $rightList")
+
+    // Sort both lists for part one
+    leftList.sort()
+    rightList.sort()
+
+    println("Left List (sorted): $leftList")
+    println("Right List (sorted): $rightList")
+
+    // Calculate the total distance for part one
+    println("Calculating total distance for Part One...")
+    val totalDistance = leftList.indices.sumOf { index ->
+        val distance = kotlin.math.abs(leftList[index] - rightList[index])
+        println("Pair: ${leftList[index]} and ${rightList[index]}, Distance: $distance")
+        distance
+    }
+    println("Total Distance (Part One): $totalDistance")
+
+    // Calculate the similarity score for part two
+    println("Calculating similarity score for Part Two...")
+    val rightListFrequency = rightList.groupingBy { it }.eachCount() // Count occurrences in the right list
+    println("Right List Frequencies: $rightListFrequency")
+
+    val similarityScore = leftList.sumOf { leftNumber ->
+        val countInRight = rightListFrequency.getOrDefault(leftNumber, 0)
+        val contribution = leftNumber * countInRight
+        println("Left Number: $leftNumber, Count in Right List: $countInRight, Contribution: $contribution")
+        contribution
+    }
+    println("Similarity Score (Part Two): $similarityScore")
+
+    // Print both results
+    println("Results:")
+    println("Part One - Total Distance: $totalDistance")
+    println("Part Two - Similarity Score: $similarityScore")
+}
+
+main()
+```
