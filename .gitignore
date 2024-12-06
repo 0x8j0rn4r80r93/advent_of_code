@@ -236,3 +236,4 @@ $RECYCLE.BIN/
 *.out
 *.app
 .fake
+2024/.vscode/launch.json
