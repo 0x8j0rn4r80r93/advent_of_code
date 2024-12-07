@@ -118,7 +118,6 @@ func isSafeWithDampener(report string) bool {
 		return false
 	}
 
-	// Try removing each level one by one
 	for i := 0; i < len(levels); i++ {
 		modifiedLevels := append([]string{}, levels[:i]...)
 		modifiedLevels = append(modifiedLevels, levels[i+1:]...)
